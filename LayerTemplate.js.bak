@@ -1,0 +1,71 @@
+//
+// 洗炼
+//
+
+
+/**
+ * 初始化、清理，不负责其他逻辑
+ *
+ */
+role.RoleFlushLayer						\= game.IView.extend({
+
+	UI_MAIN		: res/UI/role/LayerRoleFlush.json,
+
+	__data		: null,
+	__root		: null,
+
+
+	ctor:function(){
+		this._super();
+
+        //cc.log(role.RoleFlushLayer\.DEBUG.format('ctor'));
+
+		this.__data		= game.Facade.getModelData(model.RoleModel);
+
+		this.__root		= ccs.load(this.UI_MAIN).node;
+		this.addChild(this.__root);
+
+        var comp        = null;
+
+
+
+		this.__update();
+
+		return true;
+	},
+
+
+    destroy:function(){
+
+    },
+
+
+    __update:function(){
+
+	},
+
+
+    __onTouchEvent:function(sender, type){
+    	switch(type){
+        case ccui.Widget.TOUCH_ENDED:
+            switch(sender.name){
+
+
+            default:
+                this.send(common.NotifyType.RoleFlush_EVENT, {
+                    key             : sender.name
+                });
+                break;
+            }
+            break;
+        }
+    },
+
+});
+
+/********************************************************************/
+/** static **/
+/********************************************************************/
+
+role.RoleFlushLayer\.DEBUG							= '
+

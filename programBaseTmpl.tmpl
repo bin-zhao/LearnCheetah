@@ -1,0 +1,110 @@
+#encoding: utf-8
+## program base
+											## 此处的空行也是生成的文本中的内容，但有注释就不是了。所以不能用回车格式化代码了；注定不易读！
+#set global $a		= True
+#set $b				= True
+#set $c				= True
+#set $d				= 'test'
+##del $d									## 用法不对
+#set $country		= 'China'
+#if $a and $b \
+	and $c
+	<H1>ABC</H1>
+#end if
+#if $country in ('America', 'Italy', 'Australia',
+	'China')
+	<H1>DEF</H1>
+#else
+	<H1>GHI</H1>
+#end if
+## print: <H1>ABC</H1>
+##                  <H1>DEF</H1>
+
+#set $namespace1		= {'name' : {'attr' : lambda x, y, z: '1. %s, 2. %s, 3. %s' % (x, y, z)}}
+#set $subPlaceHolder	= 'sub_placeholder'
+${namespace1.name['attr']('abc', $subPlaceHolder, 1)}
+## print: 1. abc, 2. sub_placeholder, 3. 1
+
+##set $nest				= {'nest' : {'var' : 'the result of $nest($nest($val))'}}
+#set $nest				= lambda arg: '[%s]' % arg
+#set $var				= 'var'
+$nest($nest($var))							## 相当于nest是个函数，调用了两次！
+## print: [[var]]
+
+======================================================
+#set $top				= 20
+#for $i in $range($top, 0, -1)				## 不能格式化……否则输出都换行了，有table的话，table成了前缀
+$i, #end for
+======================================================
+
+======================================================
+#set $top				= 20
+#for $i in $xrange(10)						## 不能格式化……否则输出都换行了，有table的话，table成了前缀
+$i, #end for
+======================================================
+
+#set global $value		= 100
+$id($value)
+
+#set $square			= [x ** 2 for x in $xrange($self.size)]
+#for $i in $square
+$i	#end for
+
+$fnTest($self)
+## $self.fnTest()							## 不能以这种方式调用……
+
+"""
+line1 #set $test		= 10
+line2
+"""
+"""
+line3 #set $test1		= 11 #
+line4
+"""
+line5
+	- #set $test2		= 12
+line6
+
+'$test'
+$test\.method
+
+##doc: this is document						## 必须带英文冒号
+##doc-method: this is method document
+##doc-class: this is class document
+##doc-module: this is module document
+##head: this is a head
+
+What is #echo ' '.join(['that'] * 5)#?
+
+$square.reverse()							## 此处silent没必要
+#silent $square.reverse()
+
+#if True then 'abc' else 'def'
+
+## a等同c，b等同d
+## a
+$*cacheValue
+## b
+$*5*cacheValue1
+## c
+#cache
+$cacheValue2
+#end cache
+## d
+#cache timer = '5s'
+$cacheValue3
+#end cache
+## e, call templateObj.refreshCache(id) to refresh the cache
+#cache id = 'cacheOnMe'
+$cacheValue4
+#end cache
+## f, refresh when cacheValue4 == True
+#cache test = ($cacheValue4 == True)			## 括号必须加，不加会报错
+#end cache
+
+#raw
+#set $rawValue				= 10
+$me
+#def											## 任何东西都不例外
+#end def
+#end raw

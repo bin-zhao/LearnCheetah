@@ -1,0 +1,173 @@
+#encoding: utf-8
+#from LayerTemplateBase import LayerTemplateBase
+#extends LayerTemplateBase
+#set global $g_fullLayerName		= '%s.%sLayer' % ($namespace, $name)					## 首字母大写
+#set global $g_guiFileName			= 'res/UI/%s/Layer%s.json' % ($namespace, $name)
+#set global $g_modelName			= 'model.%sModel' % $model								## 首字母大写
+#set global $g_globalEventName		= 'common.NotifyType.%s_EVENT' % $name					## 首字母大写
+#set global $g_globalEventFuncName	= '__on%sEvent' % $name									## 首字母大写
+#set global $g_mediatorName			= '%sLayerMediator' % $name
+#set global $g_fullMediatorName		= '%s.%sLayerMediator' % ($namespace, $name)
+//
+// $comment
+//
+
+
+/**
+ * 初始化、清理，不负责其他逻辑
+ *
+ */
+$g_fullLayerName						\= game.IView.extend({
+
+	UI_MAIN		: $g_guiFileName,
+
+	__data		: null,
+	__root		: null,
+
+
+	ctor:function(){
+		this._super();
+
+        //cc.log($g_fullLayerName\.DEBUG.format('ctor'));
+
+		this.__data		= game.Facade.getModelData($g_modelName);
+
+		this.__root		= ccs.load(this.UI_MAIN).node;
+		this.addChild(this.__root);
+
+        var comp        = null;
+
+#if $btn_back == True:
+        comp            = this.__root.getChildByName('btn_back');
+        if(comp){
+            comp.addTouchEventListener(this.__onTouchEvent, this);
+        }
+#end if
+
+#if $btn_close == True:
+        comp            = this.__root.getChildByName('btn_close');
+        if(comp){
+            comp.addTouchEventListener(this.__onTouchEvent, this);
+        }
+#end if
+
+		this.__update();
+
+		return true;
+	},
+
+
+    destroy:function(){
+
+    },
+
+
+    __update:function(){
+
+	},
+
+
+    __onTouchEvent:function(sender, type){
+    	switch(type){
+        case ccui.Widget.TOUCH_ENDED:
+            switch(sender.name){
+#if $btn_back == True:
+            case 'btn_back':
+                this.send($g_globalEventName, {
+                    key             : sender.name
+                });
+                break;
+#end if
+
+#if $btn_close == True:
+            case 'btn_close':
+                this.send($g_globalEventName, {
+                    key             : sender.name
+                });
+                break;
+#end if
+
+            default:
+#if $global_event == True:
+                this.send($g_globalEventName, {
+                    key             : sender.name
+                });
+#end if
+                break;
+            }
+            break;
+        }
+    },
+
+});
+
+/********************************************************************/
+/** static **/
+/********************************************************************/
+
+$g_fullLayerName\.DEBUG							= '## $g_fullLayerName\.{0}: ';
+
+#if $mediator == True:
+/********************************************************************/
+/** mediator **/
+/********************************************************************/
+
+$g_fullMediatorName							\= game.LayerMediator.extend({
+
+
+	ctor:function(view){
+		this._super(view, true);
+
+        //cc.log($g_fullMediatorName\.DEBUG.format('ctor'));
+	},
+
+
+	init:function (){
+		tools.UIUtils.AutoClearManager.getInstance().addSubscribe('$g_mediatorName',
+			g_fullMediatorName, this.$g_globalEventFuncName, this);
+	},
+
+
+	show:function(parent){
+		this._super(parent);
+		parent.addChild(this.currLayer);
+	},
+
+
+	freshen:function(){
+
+	},
+
+
+	destroy:function(){
+		tools.UIUtils.AutoClearManager.getInstance().removeAll('$g_mediatorName');
+	},
+
+
+    $g_globalEventFuncName:function(obj, unusedTarget){
+        switch(obj.key){
+#if $btn_back == True:
+        case 'btn_back':
+            this.popLayer(this);
+            break;
+#end if
+
+#if $btn_close == True:
+        case 'btn_close':
+            this.popLayer(this, true);
+            break;
+#end if
+
+        default:
+            break;
+        }
+    },
+
+});
+
+/********************************************************************/
+/** static **/
+/********************************************************************/
+
+$g_fullMediatorName\.DEBUG							= '## $g_fullMediatorName\.{0}: ';
+#end if
